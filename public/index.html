@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小浩智能助手</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">🤖</span>
+            <span>小浩智能助手</span>
+            <span class="badge">v1.0</span>
+        </div>
+        <div class="model-switcher" id="modelSwitcher">
+            <select id="providerSelect" onchange="switchProvider()">
+                <option value="">加载中...</option>
+            </select>
+            <select id="modelSelect" onchange="switchModel()">
+                <option value="">加载中...</option>
+            </select>
+        </div>
+        <div class="nav-status" id="statusBadge">
+            <span class="dot"></span> 检测中...
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <button class="tab-btn active" data-tab="chat" onclick="switchTab('chat')">
+                💬 智能问答
+            </button>
+            <button class="tab-btn" data-tab="summarize" onclick="switchTab('summarize')">
+                📄 文档总结
+            </button>
+            <button class="tab-btn" data-tab="kg" onclick="switchTab('kg')">
+                🕸️ 知识图谱
+            </button>
+            <button class="tab-btn" data-tab="batch" onclick="switchTab('batch')">
+                📚 批量问答
+            </button>
+
+            <div class="sidebar-section">
+                <h4>⚙️ 当前模型</h4>
+                <div class="current-model-info" id="currentModelInfo">
+                    加载中...
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <section class="content">
+            <!-- 智能问答 -->
+            <div class="tab-content active" id="tab-chat">
+                <div class="chat-box" id="chatBox">
+                    <div class="welcome-msg">
+                        <h2>👋 你好，我是小浩</h2>
+                        <p>你的通用AI助手，支持多种大模型，可以帮你做很多事情。</p>
+                        <div class="feature-cards">
+                            <div class="card">📖 文献解读</div>
+                            <div class="card">🔍 知识问答</div>
+                            <div class="card">✍️ 内容润色</div>
+                            <div class="card">💡 灵感启发</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <textarea id="chatInput" placeholder="输入你的问题...（Shift+Enter换行）" rows="2"></textarea>
+                    <button class="send-btn" onclick="sendChat()">发送 ➤</button>
+                </div>
+            </div>
+
+            <!-- 文档总结 -->
+            <div class="tab-content" id="tab-summarize">
+                <div class="section-header">
+                    <h2>📄 文档智能总结</h2>
+                    <p>粘贴文档内容，AI 自动提取核心观点和关键信息。</p>
+                </div>
+                <div class="form-group">
+                    <label>文档类型</label>
+                    <select id="summaryType">
+                        <option value="general">通用文章 / 网页内容</option>
+                        <option value="paper">学术论文</option>
+                        <option value="report">研究报告 / 分析报告</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>粘贴文档内容</label>
+                    <textarea id="summaryInput" placeholder="把你要总结的文本粘贴到这里..." rows="10"></textarea>
+                </div>
+                <button class="primary-btn" onclick="doSummarize()">🤖 开始总结</button>
+                <div class="result-box" id="summaryResult" style="display:none;">
+                    <h3>✅ 总结结果</h3>
+                    <div id="summaryContent"></div>
+                </div>
+            </div>
+
+            <!-- 知识图谱 -->
+            <div class="tab-content" id="tab-kg">
+                <div class="section-header">
+                    <h2>🕸️ 知识图谱构建</h2>
+                    <p>输入一段文字，自动提取其中的概念和关系，生成结构化知识图谱数据。</p>
+                </div>
+                <div class="form-group">
+                    <label>文本内容</label>
+                    <textarea id="kgInput" placeholder="粘贴或输入任意中文或英文文本..." rows="10"></textarea>
+                </div>
+                <button class="primary-btn" onclick="doKGExtract()">🕸️ 提取概念关系</button>
+                <div class="result-box" id="kgResult" style="display:none;">
+                    <h3>✅ 提取结果</h3>
+                    <pre id="kgContent"></pre>
+                </div>
+            </div>
+
+            <!-- 批量问答 -->
+            <div class="tab-content" id="tab-batch">
+                <div class="section-header">
+                    <h2>📚 批量智能问答</h2>
+                    <p>基于同一份参考材料，一次回答多个问题。适合备课、调研、复习等场景。</p>
+                </div>
+                <div class="form-group">
+                    <label>参考文档（可选，有则基于文档作答）</label>
+                    <textarea id="batchDoc" placeholder="粘贴参考资料..." rows="6"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>问题列表（每行一个问题）</label>
+                    <textarea id="batchQuestions" placeholder="什么是机器学习？&#10;深度学习和传统ML有什么区别？&#10;Transformer的核心创新是什么？" rows="6"></textarea>
+                </div>
+                <button class="primary-btn" onclick="doBatchQA()">📚 开始批量问答</button>
+                <div class="result-box" id="batchResult" style="display:none;">
+                    <h3>✅ 问答结果</h3>
+                    <div id="batchContent"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        小浩智能助手 · 支持多模型自由切换 · <a href="https://github.com" target="_blank">GitHub</a>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
